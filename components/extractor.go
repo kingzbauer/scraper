@@ -8,8 +8,8 @@ import (
 )
 
 type extractor struct {
-	In  <-chan string
-	Out chan<- []string
+	In  <-chan Page
+	Out chan<- PageImages
 }
 
 // NewExtractor ...
@@ -20,14 +20,14 @@ func NewExtractor() goflow.Component {
 // Process ...
 func (e *extractor) Process() {
 	var wg sync.WaitGroup
-	for html := range e.In {
+	for page := range e.In {
 		wg.Add(1)
-		go func(html string) {
+		go func(page Page) {
 			defer wg.Done()
 
-			root := soup.HTMLParse(html)
-			e.Out <- e.findImageSrc(root)
-		}(html)
+			root := soup.HTMLParse(*page.HTML)
+			e.Out <- NewPageImages(e.findImageSrc(root), page.URL)
+		}(page)
 	}
 
 	wg.Wait()

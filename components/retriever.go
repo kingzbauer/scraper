@@ -13,7 +13,8 @@ type retriever struct {
 	// In will receiver the url to fetch
 	In <-chan string
 	// Out will carry the HTML content of the url
-	Out    chan<- string
+	Out    chan<- Page
+	Err    chan<- error
 	getter Retriever
 }
 
@@ -33,7 +34,9 @@ func (r *retriever) Process() {
 			defer wg.Done()
 			// TODO: Add an error process
 			if html, err := r.getter(url); err == nil {
-				r.Out <- html
+				r.Out <- NewPage(url, html)
+			} else {
+				r.Err <- err
 			}
 		}(url)
 	}

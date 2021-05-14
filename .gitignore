@@ -1,2 +1,5 @@
 # vim temp files
 *.sw?
+
+# download file
+downloads/

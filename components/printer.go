@@ -7,7 +7,7 @@ import (
 )
 
 type printer struct {
-	In <-chan string
+	In <-chan ImageSrc
 }
 
 // NewPrinter ...
